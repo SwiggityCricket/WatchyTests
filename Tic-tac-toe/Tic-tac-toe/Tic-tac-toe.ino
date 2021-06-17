@@ -8,30 +8,12 @@
    L2: cycle spaces
    R1: reset and clear the screen
    R2: place mark
-
-   NOTES ON HOW FAST THE SCREEN UPDATES:
-   I worked quite hard to figure out the source of the screen's slowness. Total time it takes to call display.display(true)
-   is about 500ms. This is literally because the GxEPD2_EPD::_waitWhileBusy funtion is waiting for the display to come back
-   and say "yup, done displaying stuff." You can make the game feel significantly faster by changing the while(1) to while(0)
-   in that function. This allows your loop to continue while the screen is refreshing, BUT can introduce weird artifacts
-   where the screen updates as you are sending it info occasionally.
-   ***
-   Line 103 in the libraries\GxEPD2\src\GxEPD2_EPD.cpp file. 
-   ***
-   Because the SPI data transfer takes mere milliseconds compared to the gargantuan 430ms it takes the display to refresh, 
-   you can actually press buttons faster than the display can update. But that's not necessarily a bad thing, you just have 
-   to be aware of it. 
-   
-   Why 430ms when I said 500ms before:
-   For a while I thought the slowness was due to the GxEPD2 library's digital_write calls for every byte of SPI data, but
-   removing those only saved ~70ms bringing the total time to call display.display(true) to 430ms. The screen really is just 
-   that slow.
 */
 #include <GxEPD2_BW.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 #include <Fonts/FreeMonoBold12pt7b.h>
 
-// Display setup variables
+// Display setup
 const int CS = 5;
 const int DC = 10;
 const int RESET = 9;
@@ -217,7 +199,7 @@ void setup() {
 
 }
 
-
+// You could easily put all of this into a function and call it on button presses, then put the uC to sleep.
 void loop() {
   bool refresh = false;
   unsigned long millisRef = millis();
@@ -284,11 +266,14 @@ void loop() {
   //display.init(0, false);
   //display.setFullWindow();
 
-  // Refresh if needed and draw the screen. Note that the display doesn't update unless a button is pressed.
+  // Refresh and draw the screen if needed. Note that the display doesn't update unless a button is pressed.
   
   if (refresh) {
     display.fillScreen(GxEPD_BLACK);
-    display.display(true); 
+    display.display(true);
+    //delay(430); // Takes about this long for the display to finish displaying stuff on my hardware. If you've done
+                // the while(1) -> while(0) modification in the GxEPD2_EPD:_waitWhileBusy library you'll need this.
+                // Otherwise leave this commented because the display() function already has delay.
     can_draw = true;
     refresh = false;
   }
