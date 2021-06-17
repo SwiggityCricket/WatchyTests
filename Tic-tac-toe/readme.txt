@@ -1,5 +1,5 @@
 Tic-tac-toe on the Watchy
-Made by SwiggityCricket 6/16/2020
+Made by SwiggityCricket 6/16/2021
 
 Use all code for whatever you want.
 It doesn't really have anything specific to do with Watchy other than the button inits and display settings, but this is a good base to start from for "games" and whatnot. At least it is for me! Please note this absolutely destroys battery because the processor is looping forever, even though the display isn't refreshing. Could fix this by putting the game logic in the button interrupts and putting it to sleep in between.
